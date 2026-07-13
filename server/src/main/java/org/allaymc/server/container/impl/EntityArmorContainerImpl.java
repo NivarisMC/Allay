@@ -53,7 +53,12 @@ public class EntityArmorContainerImpl extends BaseContainer implements ArmorCont
 
     @Override
     public void loadNBT(List<NbtMap> nbtList) {
-        super.loadNBT(nbtList);
+        loadNBTPositional(nbtList);
         onArmorChange(null);
+    }
+
+    @Override
+    public List<NbtMap> saveNBT(boolean saveEmptySlots) {
+        return saveNBTPositional();
     }
 }

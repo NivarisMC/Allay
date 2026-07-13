@@ -209,4 +209,23 @@ public class BaseContainer implements Container {
             content[slot] = itemStack;
         }
     }
+
+    // Vanilla persists Armor/Offhand/Mainhand as fixed-length, position-only lists with
+    // no per-item Slot tag (list index IS the slot), unlike Inventory/EnderChestInventory/
+    // block container Items which always carry an explicit Slot byte. Containers backed by
+    // those tags should use these instead of loadNBT/saveNBT to stay compatible with worlds
+    // written by vanilla Bedrock or PocketMine-MP.
+    protected void loadNBTPositional(List<NbtMap> nbtList) {
+        for (int slot = 0; slot < nbtList.size() && slot < content.length; slot++) {
+            content[slot] = NBTIO.getAPI().fromItemStackNBT(nbtList.get(slot));
+        }
+    }
+
+    protected List<NbtMap> saveNBTPositional() {
+        var list = new ArrayList<NbtMap>(content.length);
+        for (var itemStack : content) {
+            list.add(itemStack.saveNBT());
+        }
+        return new NbtList<>(NbtType.COMPOUND, list);
+    }
 }

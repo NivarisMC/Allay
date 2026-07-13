@@ -6,7 +6,9 @@ import org.allaymc.api.entity.Entity;
 import org.allaymc.api.entity.component.EntityContainerHolderComponent;
 import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.interfaces.ItemAirStack;
+import org.cloudburstmc.nbt.NbtMap;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -42,5 +44,15 @@ public class EntityHandContainerImpl extends BaseContainer implements EntityHand
     @Override
     public void clearItemInHand() {
         setItemStack(0, ItemAirStack.AIR_STACK);
+    }
+
+    @Override
+    public void loadNBT(List<NbtMap> nbtList) {
+        loadNBTPositional(nbtList);
+    }
+
+    @Override
+    public List<NbtMap> saveNBT(boolean saveEmptySlots) {
+        return saveNBTPositional();
     }
 }

@@ -80,9 +80,16 @@ public class AllayNBTIO implements NBTIO {
     public ItemStack fromItemStackNBT(NbtMap nbt) {
         try {
             nbt = ItemStateUpdaters.updateItemState(nbt, ProtocolInfo.ITEM_STATE_UPDATER.getVersion());
+            var name = nbt.getString("Name");
+            if (name.isEmpty()) {
+                // Vanilla represents an empty/unoccupied item slot (e.g. an unfilled Armor or
+                // Offhand position) as an item compound with no Name tag at all, not as an
+                // explicit "minecraft:air" entry
+                return ItemAirStack.AIR_STACK;
+            }
+
             int count = nbt.getByte("Count", (byte) 1);
             int meta = nbt.getShort("Damage");
-            var name = nbt.getString("Name");
             var itemType = Objects.requireNonNull(Registries.ITEMS.get(new Identifier(name)), "Unknown item type " + name + " while loading container items!");
             return itemType.createItemStack(
                     ItemStackInitInfo

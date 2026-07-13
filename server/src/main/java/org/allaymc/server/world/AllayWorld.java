@@ -213,12 +213,15 @@ public class AllayWorld implements World {
 
         // Find the spawn point only the first time the world is loaded
         if (this.worldData.getWorldStartCount() == 1 && !isSafeStandingPos(new Position3i(worldData.getSpawnPoint(), overworld))) {
+            var recordedSpawnPoint = worldData.getSpawnPoint();
+            var searchX = recordedSpawnPoint.x();
+            var searchZ = recordedSpawnPoint.z();
             Thread.ofVirtual().name("Spawn Point Finding Thread #" + name).start(() -> {
-                var newSpawnPoint = overworld.findSuitableGroundPosAround(this::isSafeStandingPos, 0, 0, 32);
+                var newSpawnPoint = overworld.findSuitableGroundPosAround(this::isSafeStandingPos, searchX, searchZ, 32);
                 if (newSpawnPoint == null) {
                     log.warn("Cannot find a safe spawn point in the overworld dimension of world {}", name);
-                    overworld.getChunkManager().getOrLoadChunk(0, 0);
-                    newSpawnPoint = new Vector3i(0, overworld.getHeight(0, 0) + 1, 0);
+                    overworld.getChunkManager().getOrLoadChunk(searchX >> 4, searchZ >> 4);
+                    newSpawnPoint = new Vector3i(searchX, overworld.getHeight(searchX, searchZ) + 1, searchZ);
                 }
                 var finalNewSpawnPoint = newSpawnPoint;
                 overworld.getWorld().getScheduler().runLater(this, () -> {

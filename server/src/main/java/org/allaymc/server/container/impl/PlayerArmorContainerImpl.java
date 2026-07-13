@@ -45,8 +45,13 @@ public class PlayerArmorContainerImpl extends AbstractPlayerContainer implements
 
     @Override
     public void loadNBT(List<NbtMap> nbtList) {
-        super.loadNBT(nbtList);
+        loadNBTPositional(nbtList);
         onArmorChange(null);
+    }
+
+    @Override
+    public List<NbtMap> saveNBT(boolean saveEmptySlots) {
+        return saveNBTPositional();
     }
 
     @Override
